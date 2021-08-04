@@ -65,14 +65,14 @@ where
         // read the header
         let auth_header = req.header(ImplScheme::header_name());
         if auth_header.is_none() {
-            info!("no auth header, proceeding");
-            return Ok(next.run(req).await);
+            error!("no auth header, bailing");
+            return Ok(Response::new(StatusCode::Unauthorized));
         }
         let value: Vec<_> = auth_header.unwrap().into_iter().collect();
 
         if value.is_empty() {
-            info!("empty auth header, proceeding");
-            return Ok(next.run(req).await);
+            error!("empty auth header, bailing");
+            return Ok(Response::new(StatusCode::Unauthorized));
         }
 
         if value.len() > 1 && ImplScheme::should_401_on_multiple_values() {
